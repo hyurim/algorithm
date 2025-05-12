@@ -1,0 +1,29 @@
+-- https://school.programmers.co.kr/learn/courses/30/lessons/151141
+-- 자동차 대여 기록 별 대여 금액 구하기
+
+WITH tb1 as (
+    SELECT h.HISTORY_ID,
+    c.CAR_TYPE,
+    c.DAILY_FEE,
+    DATEDIFF(h.END_DATE, START_DATE) + 1 as 'DAY',
+    CASE
+        WHEN DATEDIFF(h.END_DATE, START_DATE) + 1 >= 90 THEN '90일 이상'
+        WHEN DATEDIFF(h.END_DATE, START_DATE) + 1 >= 30 THEN '30일 이상'
+        WHEN DATEDIFF(h.END_DATE, START_DATE) + 1 >= 7 THEN '7일 이상'
+        ELSE '7일 미만'
+    END AS 'RENT_DAY'
+    FROM CAR_RENTAL_COMPANY_CAR c
+    JOIN CAR_RENTAL_COMPANY_RENTAL_HISTORY h ON h.CAR_ID = c.CAR_ID
+    WHERE CAR_TYPE = '트럭'
+    
+)
+
+SELECT
+t.HISTORY_ID,
+FLOOR((DAILY_FEE * (100 - IFNULL(p.DISCOUNT_RATE,0))/100) * t.DAY) as 'FEE'
+FROM tb1 t
+LEFT JOIN CAR_RENTAL_COMPANY_DISCOUNT_PLAN p ON t.CAR_TYPE = p.CAR_TYPE
+AND t.RENT_DAY = p.DURATION_TYPE
+ORDER BY FEE DESC, t.HISTORY_ID DESC
+
+
