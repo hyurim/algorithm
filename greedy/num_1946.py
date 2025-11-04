@@ -1,6 +1,5 @@
-#https://www.acmicpc.net/problem/1946
-
-#
+# https://www.acmicpc.net/problem/1946
+# 신입사원
 
 import sys
 input = sys.stdin.readline
